@@ -1,0 +1,21 @@
+{
+  "name": "codefreshbot",
+  "version": "1.0.0",
+  "description": "Slackbot for Codefresh",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Slack",
+    "Codefresh"
+  ],
+  "author": "jdickie",
+  "license": "MIT",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "codefresh-sdk": "^1.4.0",
+    "config": "^3.2.4",
+    "express": "^4.17.1"
+  }
+}
