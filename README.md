@@ -1,0 +1,2 @@
+# codefreshbot
+Slackbot for Codefresh
