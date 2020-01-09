@@ -1,7 +1,7 @@
 FROM node:10
 
-ADD docker/node/helm-v2.14.3-linux-amd64.tar.gz /tmp/
-
-RUN mv /tmp/linux-amd64/helm /usr/local/bin/helm
+RUN mkdir /application
 WORKDIR /application
-CMD node index.js
+COPY ./package* /application/
+RUN ls && npm install
+CMD npm run dev

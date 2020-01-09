@@ -4,7 +4,8 @@
   "description": "Slackbot for Codefresh",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm install && export ENVIRONMENT=dev && nodemon index.js"
   },
   "keywords": [
     "Slack",
@@ -13,9 +14,11 @@
   "author": "jdickie",
   "license": "MIT",
   "dependencies": {
-    "child_process": "^1.0.2",
+    "@slack/events-api": "^2.3.0",
+    "@slack/web-api": "^5.6.0",
     "codefresh-sdk": "^1.4.0",
     "config": "^3.2.4",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nodemon": "^2.0.2"
   }
 }
