@@ -14,7 +14,9 @@
   "author": "jdickie",
   "license": "MIT",
   "dependencies": {
+    "@octokit/rest": "^16.36.0",
     "@slack/events-api": "^2.3.0",
+    "@slack/interactive-messages": "^1.4.0",
     "@slack/web-api": "^5.6.0",
     "codefresh-sdk": "^1.4.0",
     "config": "^3.2.4",
