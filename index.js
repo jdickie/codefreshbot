@@ -1,32 +1,29 @@
-const Octokit = require('@octokit/rest');
 const { createMessageAdapter } = require('@slack/interactive-messages');
 const { createEventAdapter } = require('@slack/events-api');
 const { WebClient } = require('@slack/web-api');
 const { Codefresh, Config } = require('codefresh-sdk');
 const configjson = require('config');
 const express = require('express');
+const bodyParser = require('body-parser');
+const cf_modal = require('./lib/cf_modal');
 
-const GITHUB_ACCESS_TOKEN = configjson.get('github.access_token');
 const BOT_OAUTH_TOKEN = configjson.get('slack.bot.token');
 const CODEFRESH_AUTH_TOKEN = configjson.get('codefresh.token');
 const SLACK_SIGNING_SECRET = configjson.get('slack.signing_secret');
+const VIEW_SUBMISSION_CALLBACK_ID = 'codefresh_form';
 
-/* @var Array */
-const projects = configjson.get('codefresh.projects');
-
-const octokit = new Octokit({
-    auth: GITHUB_ACCESS_TOKEN,
-    userAgent: configjson.get('github.user_agent')
-});
+let viewId = '';
 
 const slackInteractive = createMessageAdapter(SLACK_SIGNING_SECRET);
 const web = new WebClient(BOT_OAUTH_TOKEN);
 const slackEvents = createEventAdapter(SLACK_SIGNING_SECRET);
 const app = express();
 
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
 slackEvents.on('url_verification', (event, respond) => {
     try {
-        console.log(event);
         if (!event.challenge) {
             console.log("No challenge present - exiting");
             next();
@@ -43,107 +40,82 @@ slackEvents.on('url_verification', (event, respond) => {
 slackEvents.on('app_mention', async (event) => {
     const channelID = event.channel;
     const user = event.user;
-    let textBlockProjects = [];
-    projects.forEach((proj) => {
-        textBlockProjects.push({text: 
-            {
-                type: 'plain_text', 
-                text: proj['cf_name']}, 
-                value: `${proj['owner']}:${proj['repo']}`
-            });
-        });
-    await web.chat.postEphemeral({
-        channel: channelID,
+    web.chat.postEphemeral({
         user: user,
-        text: 'CodefreshBot',
-        blocks: [
-            {
-                type: 'section',
-                block_id: 'cf_project_select',
-                text: {
-                    type: 'mrkdwn',
-                    text: "Pick a git repo"
-                },
-                accessory: {
-                    action_id: 'cf_repo_select_action',
-                    type: 'static_select',
-                    placeholder: {
-                        type: 'plain_text',
-                        text: 'Select a git repo'
-                    },
-                    options: textBlockProjects
-                }
-            }
-        ]
+        channel: channelID,
+        text: ":thumbsup: Starting..."
     });
+    cf_modal.start();
 });
 
 slackInteractive.action({type: 'static_select'}, async (payload, respond) => {
-    console.log(payload.channel);
-    const selectedOption = payload.actions[0].selected_option;
-    const values = selectedOption.value.split(':');
-    const owner = values[0];
-    const repo = values[1];
-    const user = payload.user.id;
-    respond({
-        text: `:thumbsup: Thanks, looking up some info on ${selectedOption.text.text}`
-    });
     try {
-        const options = octokit.repos.listReleases.endpoint.merge({
-            owner: owner,
-            repo: repo,
-            per_page: 5
-        });
-        const tagOptions = await octokit.paginate(
-            options, 
-            response => response.data.map((release) => {
-                return {
-                    text: {
-                        type: 'plain_text',
-                        text: release.tag_name
-                    },
-                    value: release.tag_name
-                };
-            })
-        );
-        await web.chat.postEphemeral({
-            user: user,
-            channel: payload.channel.id,
-            text: {
-                type: 'plain_text',
-                text: ':wow: Found some things'
-            },
-            blocks: [{
-                type: 'section',
-                block_id: 'cf_tag_select',
-                text: {
-                    type: 'mrkdwn',
-                    text: `Releases from ${repo}`
-                },
-                accessory: {
-                    action_id: 'cf_release_select_action',
-                    type: 'static_select',
-                    placeholder: {
-                        type: 'plain_text',
-                        text: 'Select a git release'
-                    },
-                    options: tagOptions
-                }
-            }]
-        });
+        if (payload.type === "block_actions" && 
+            payload.actions[0].action_id === "cf_repo_select_action") {
+                cf_modal.update_with_repos(payload);
+        }
     } catch(err) {
-        console.log(err);
-        web.chat.postEphemeral({
-            user: user,
-            channel: payload.channel.id,
-            text: 'Oops, something went wrong'
-        });
+        console.log(JSON.stringify(err.data));
     }
     
-})
+});
+
+slackInteractive.viewSubmission(VIEW_SUBMISSION_CALLBACK_ID, async (payload) => {
+    console.log(`viewID; ${viewId}`);
+    try {
+        const result = await web.views.update({
+            view_id: viewId,
+            view: {
+                type: 'modal',
+                callback_id: VIEW_SUBMISSION_CALLBACK_ID,
+                title: {
+                    type: 'plain_text',
+                    text: 'WIP :dealwithit:'
+                },
+                submit: {
+                    type: "plain_text",
+                    text: "Submit"
+                },
+                blocks: [{
+                    type: 'section',
+                    block_id: 'cf_tag_select',
+                    text: {
+                        type: 'mrkdwn',
+                        text: 'WIPS'
+                    },
+                    accessory: {
+                        action_id: 'cf_release_select_action',
+                        type: 'static_select',
+                        placeholder: {
+                            type: 'plain_text',
+                            text: 'Git releases'
+                        },
+                        options: [
+                            {
+                                text: {
+                                    text: 'WIP',
+                                    type: 'plain_text'
+                                },
+                                value: 'WIP'
+                            }
+                        ]
+                    }
+                }]
+            }
+        });
+        console.log(`result: ${JSON.stringify(result)}`);
+    } catch (err) {
+        console.log(`error: ${JSON.stringify(err)}`);
+    }
+    
+});
 
 app.use('/interactions', slackInteractive.requestListener());
 app.use('/events', slackEvents.requestListener());
+app.use('/deploy_git_tag', (req, res) => {
+    res.send(200);
+    const trigger_id = req.body.trigger_id;
+})
 
 async function getCodefreshSDK() {
     return new Codefresh(await Config.load({
