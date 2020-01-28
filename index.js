@@ -12,15 +12,13 @@ const CODEFRESH_AUTH_TOKEN = configjson.get('codefresh.token');
 const SLACK_SIGNING_SECRET = configjson.get('slack.signing_secret');
 const VIEW_SUBMISSION_CALLBACK_ID = 'codefresh_form';
 
+
 let viewId = '';
 
 const slackInteractive = createMessageAdapter(SLACK_SIGNING_SECRET);
 const web = new WebClient(BOT_OAUTH_TOKEN);
 const slackEvents = createEventAdapter(SLACK_SIGNING_SECRET);
 const app = express();
-
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 slackEvents.on('url_verification', (event, respond) => {
     try {
@@ -63,46 +61,46 @@ slackInteractive.action({type: 'static_select'}, async (payload, respond) => {
 slackInteractive.viewSubmission(VIEW_SUBMISSION_CALLBACK_ID, async (payload) => {
     console.log(`viewID; ${viewId}`);
     try {
-        const result = await web.views.update({
-            view_id: viewId,
-            view: {
-                type: 'modal',
-                callback_id: VIEW_SUBMISSION_CALLBACK_ID,
-                title: {
-                    type: 'plain_text',
-                    text: 'WIP :dealwithit:'
-                },
-                submit: {
-                    type: "plain_text",
-                    text: "Submit"
-                },
-                blocks: [{
-                    type: 'section',
-                    block_id: 'cf_tag_select',
-                    text: {
-                        type: 'mrkdwn',
-                        text: 'WIPS'
-                    },
-                    accessory: {
-                        action_id: 'cf_release_select_action',
-                        type: 'static_select',
-                        placeholder: {
-                            type: 'plain_text',
-                            text: 'Git releases'
-                        },
-                        options: [
-                            {
-                                text: {
-                                    text: 'WIP',
-                                    type: 'plain_text'
-                                },
-                                value: 'WIP'
-                            }
-                        ]
-                    }
-                }]
-            }
-        });
+        // const result = await web.views.update({
+        //     view_id: viewId,
+        //     view: {
+        //         type: 'modal',
+        //         callback_id: VIEW_SUBMISSION_CALLBACK_ID,
+        //         title: {
+        //             type: 'plain_text',
+        //             text: 'WIP :dealwithit:'
+        //         },
+        //         submit: {
+        //             type: "plain_text",
+        //             text: "Submit"
+        //         },
+        //         blocks: [{
+        //             type: 'section',
+        //             block_id: 'cf_tag_select',
+        //             text: {
+        //                 type: 'mrkdwn',
+        //                 text: 'WIPS'
+        //             },
+        //             accessory: {
+        //                 action_id: 'cf_release_select_action',
+        //                 type: 'static_select',
+        //                 placeholder: {
+        //                     type: 'plain_text',
+        //                     text: 'Git releases'
+        //                 },
+        //                 options: [
+        //                     {
+        //                         text: {
+        //                             text: 'WIP',
+        //                             type: 'plain_text'
+        //                         },
+        //                         value: 'WIP'
+        //                     }
+        //                 ]
+        //             }
+        //         }]
+        //     }
+        // });
         console.log(`result: ${JSON.stringify(result)}`);
     } catch (err) {
         console.log(`error: ${JSON.stringify(err)}`);
@@ -112,9 +110,11 @@ slackInteractive.viewSubmission(VIEW_SUBMISSION_CALLBACK_ID, async (payload) => 
 
 app.use('/interactions', slackInteractive.requestListener());
 app.use('/events', slackEvents.requestListener());
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/deploy_git_tag', (req, res) => {
-    res.send(200);
+    res.status(200).send(':thumbsup: opening up modal...');
     const trigger_id = req.body.trigger_id;
+    cf_modal.start(trigger_id);
 })
 
 async function getCodefreshSDK() {
