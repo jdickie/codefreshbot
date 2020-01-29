@@ -48,9 +48,18 @@ slackEvents.on('app_mention', async (event) => {
 
 slackInteractive.action({type: 'static_select'}, async (payload, respond) => {
     try {
-        if (payload.type === "block_actions" && 
-            payload.actions[0].action_id === "cf_repo_select_action") {
-                cf_modal.update_with_repos(payload);
+        if (payload.type === "block_actions") {
+            switch(payload.actions[0].action_id) {
+                case "cf_repo_select_action":
+                    cf_modal.update_with_repos(payload);
+                    break;
+                case "cf_release_select_action":
+                    cf_modal.update_release_selection(payload);
+                    break;
+                case "cf_env_select_action":
+                    cf_modal.update_env_selection(payload);
+                    break;
+            }
         }
     } catch(err) {
         console.log(JSON.stringify(err.data));
@@ -59,48 +68,12 @@ slackInteractive.action({type: 'static_select'}, async (payload, respond) => {
 });
 
 slackInteractive.viewSubmission(VIEW_SUBMISSION_CALLBACK_ID, async (payload) => {
-    console.log(`viewID; ${viewId}`);
     try {
-        // const result = await web.views.update({
-        //     view_id: viewId,
-        //     view: {
-        //         type: 'modal',
-        //         callback_id: VIEW_SUBMISSION_CALLBACK_ID,
-        //         title: {
-        //             type: 'plain_text',
-        //             text: 'WIP :dealwithit:'
-        //         },
-        //         submit: {
-        //             type: "plain_text",
-        //             text: "Submit"
-        //         },
-        //         blocks: [{
-        //             type: 'section',
-        //             block_id: 'cf_tag_select',
-        //             text: {
-        //                 type: 'mrkdwn',
-        //                 text: 'WIPS'
-        //             },
-        //             accessory: {
-        //                 action_id: 'cf_release_select_action',
-        //                 type: 'static_select',
-        //                 placeholder: {
-        //                     type: 'plain_text',
-        //                     text: 'Git releases'
-        //                 },
-        //                 options: [
-        //                     {
-        //                         text: {
-        //                             text: 'WIP',
-        //                             type: 'plain_text'
-        //                         },
-        //                         value: 'WIP'
-        //                     }
-        //                 ]
-        //             }
-        //         }]
-        //     }
-        // });
+        console.log(`env: ${cf_modal.selectedEnv} project: ${cf_modal.selectedProject} release: ${cf_modal.selectedRelease}`);
+        const result = await sdk.pipelines.run(cf_modal.selectedProject, {
+            branch: cf_modal.selectedRelease,
+            trigger: cf_modal.selectedEnv
+        });
         console.log(`result: ${JSON.stringify(result)}`);
     } catch (err) {
         console.log(`error: ${JSON.stringify(err)}`);
