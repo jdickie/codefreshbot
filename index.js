@@ -1,7 +1,7 @@
 const { createMessageAdapter } = require('@slack/interactive-messages');
 const { createEventAdapter } = require('@slack/events-api');
 const { WebClient } = require('@slack/web-api');
-const { Codefresh, Config } = require('codefresh-sdk');
+const rp = require('request-promise-native');
 const configjson = require('config');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -69,14 +69,46 @@ slackInteractive.action({type: 'static_select'}, async (payload, respond) => {
 
 slackInteractive.viewSubmission(VIEW_SUBMISSION_CALLBACK_ID, async (payload) => {
     try {
+
         console.log(`env: ${cf_modal.selectedEnv} project: ${cf_modal.selectedProject} release: ${cf_modal.selectedRelease}`);
-        const result = await sdk.pipelines.run(cf_modal.selectedProject, {
-            branch: cf_modal.selectedRelease,
-            trigger: cf_modal.selectedEnv
+        const result = await rp({
+            uri: `https://g.codefresh.io/api/pipelines/run/${encodeURIComponent(cf_modal.selectedProject)}`,
+            method: 'POST',
+            body: {
+                name: cf_modal.selectedProject, 
+                branch: cf_modal.selectedRelease,
+                trigger: cf_modal.selectedEnv
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': CODEFRESH_AUTH_TOKEN
+            },
+            json: true
         });
-        console.log(`result: ${JSON.stringify(result)}`);
+        console.log(`result: ${JSON.stringify(result.body)}`);
+        web.chat.postEphemeral({
+            user: cf_modal.user_id,
+            channel: cf_modal.channel_id,
+            text: 'Running...',
+            blocks: [
+                {
+                    type: 'section',
+                    text: {
+                        type: 'plain_text',
+                        text: `Running ${cf_modal.selectedProject} for ${cf_modal.selectedEnvDisplayName}`
+                    }
+                },
+                {
+                    type: 'section',
+                    text: {
+                        type: 'plain_text',
+                        text: ''
+                    }
+                }
+            ]
+        });
     } catch (err) {
-        console.log(`error: ${JSON.stringify(err)}`);
+        console.log(err);
     }
     
 });
@@ -86,23 +118,20 @@ app.use('/events', slackEvents.requestListener());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/deploy_git_tag', (req, res) => {
     res.status(200).send(':thumbsup: opening up modal...');
-    const trigger_id = req.body.trigger_id;
-    cf_modal.start(trigger_id);
+    try {
+        const trigger_id = req.body.trigger_id;
+        cf_modal.start(trigger_id, req.body.channel_id, req.body.user_id);
+    } catch(err) {
+        console.log(`Error: ${JSON.stringify(err)}`);
+        res.status(500).send('Oops...something went wrong on our end');
+    }
 })
-
-async function getCodefreshSDK() {
-    return new Codefresh(await Config.load({
-        url: 'https://g.codefresh.io',
-        apiKey: CODEFRESH_AUTH_TOKEN,
-    }));
-};
 
 let sdk = null;
 // Parsing application/json
 app.use(express.json());
 // Slack has mixed url-form-encoded values and other endpoints with JSON. Enabling x-www-form-urlencoded here
 app.use(express.urlencoded({ extended: true }));
-app.listen(configjson.get('port'), () => {
-    sdk = getCodefreshSDK();
+app.listen(configjson.get('port'), async () => {
     console.log("Online");
 });
