@@ -29,7 +29,7 @@ plugins:
   - serverless-offline
 functions:
   app:
-    handler: handler
+    handler: handler.api
     events:
       - http:
         path: /events
