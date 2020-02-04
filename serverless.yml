@@ -31,12 +31,9 @@ functions:
   app:
     handler: handler.api
     events:
-      - http:
-        path: /events
-        method: post
-      - http:
-        path: /interactions
-        method: post
+      - http: POST /events
+      - http: POST /interactions
+      - http: POST /deploy_git_tag
 
 custom:
   serverless-offline:
