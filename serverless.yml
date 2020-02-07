@@ -1,20 +1,8 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
+# Lambda configuration for the Codefreshbot. Intended to be used in AWS Lambda with API Gateway
 
 service: botservice
-# app and org for use with dashboard.serverless.com
-#app: your-app-name
-#org: your-org-name
+app: Codefreshbot
+org: jdickie
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -23,6 +11,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
+  memorySize: 256
 
 plugins:
   - serverless-express
@@ -30,6 +19,7 @@ plugins:
 functions:
   app:
     handler: handler.api
+    description: One stop shop for everything for this app -- send /events, /interactions, slash commands here
     events:
       - http: POST /events
       - http: POST /interactions
