@@ -1,8 +1,8 @@
 # Lambda configuration for the Codefreshbot. Intended to be used in AWS Lambda with API Gateway
 
 service: botservice
-app: Codefreshbot
-org: jdickie
+app: codefreshbot
+org: jgrantd
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -10,8 +10,14 @@ org: jdickie
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:stage}
   memorySize: 256
+  stackName: codefreshbot-lambda-stack-${opt:stage}
+  apiName: cfbot-api-${opt:stage}
+  logRetentionInDays: 3
+  stackTags:
+    - usage:slack
+    - type:bot
 
 plugins:
   - serverless-express
