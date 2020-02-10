@@ -21,6 +21,8 @@
     "codefresh-sdk": "^1.4.0",
     "config": "^3.2.4",
     "express": "^4.17.1",
+    "http-proxy-agent": "^4.0.1",
+    "https-proxy-agent": "^5.0.0",
     "nodemon": "^2.0.2",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",

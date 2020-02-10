@@ -10,10 +10,10 @@ org: jgrantd
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: ${opt:stage}
+  stage: ${opt:stage, 'dev'}
   memorySize: 256
-  stackName: codefreshbot-lambda-stack-${opt:stage}
-  apiName: cfbot-api-${opt:stage}
+  stackName: codefreshbot-lambda-stack-${opt:stage, 'dev'}
+  apiName: cfbot-api-${opt:stage, 'dev'}
   logRetentionInDays: 3
   stackTags:
     - usage:slack
