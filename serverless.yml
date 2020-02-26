@@ -23,14 +23,21 @@ plugins:
   - serverless-express
   - serverless-offline
 functions:
-  app:
-    handler: handler.api
-    description: One stop shop for everything for this app -- send /events, /interactions, slash commands here
+  deploy:
+    handler: ./lib/deploy.handler
+    description: Starting point for opening up modal
+    events:
+      - http: POST /deploy_git_tag
+  events:
+    handler: ./lib/events.handler
+    description: Routing for events calls
     events:
       - http: POST /events
+  interactions:
+    handler: ./lib/interactions.handler
+    description: Routing for interactions
+    events:
       - http: POST /interactions
-      - http: POST /deploy_git_tag
-
 custom:
   serverless-offline:
     httpPort: 3000
