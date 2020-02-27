@@ -5,7 +5,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/node/Dockerfile
-      target: dev
+      target: prod
     image: cf-bot
     volumes:
       - "..:/application/"
