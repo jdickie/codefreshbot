@@ -113,7 +113,6 @@ steps:
             - cf_export CHART_VERSION=0.0.0-${{CF_BRANCH}}
             - cf_export RELEASE_NAME=codefreshbot-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
             - cf_export INGRESS_HOSTS_HOSTNAME="codefreshbot.${{KUBE_SUBDOMAIN}}.${{KUBE_DOMAIN}}"
-            - cf_export KUBE_CONTEXT='Dev-Preview'
   deploy:
     when:
       steps:
@@ -134,7 +133,7 @@ steps:
       - NAMESPACE=codefreshbot
       - NODE_ENV=production
       - VALUE_imagePullSecretsJson=${{CFCR_HASH}}
-      - VALUE_namespace=dev
+      - VALUE_namespace=${{HELM_NAMESPACE}}
       - CHART_REF=${{CHART_REF}}
       - VALUE_image=${{IMAGE}}
       - RELEASE_NAME=${{RELEASE_NAME}}
