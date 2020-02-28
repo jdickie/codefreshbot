@@ -6,6 +6,8 @@ services:
       context: ..
       dockerfile: ./docker/node/Dockerfile
       target: dev
+    env_file:
+      - codefreshbot.env
     image: cf-bot
     volumes:
       - "..:/application/"
