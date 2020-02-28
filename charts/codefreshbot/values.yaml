@@ -8,8 +8,8 @@ image:
   
 pullPolicy: IfNotPresent
 
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: codefreshbot
+fullnameOverride: codefreshbot
 
 service:
   type: ClusterIP
