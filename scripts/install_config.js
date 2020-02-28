@@ -11,6 +11,5 @@ const configRawJSON = ssm.getParameter({
         console.log('Error retrieving SSM data');
         throw err;
     }
-    console.log(data);
     fs.writeFileSync('./config/default.json', data.Parameter.Value);
 });

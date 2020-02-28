@@ -6,8 +6,10 @@ services:
       context: ..
       dockerfile: ./docker/node/Dockerfile
       target: dev
-    env_file:
-      - codefreshbot.env
+      args:
+        - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+        - AWS_REGION=$AWS_REGION
     image: cf-bot
     volumes:
       - "..:/application/"
