@@ -101,7 +101,7 @@ steps:
       - NAMESPACE=codefreshbot
       - NODE_ENV=production
       - VALUE_imagePullSecrets_Dockerconfigjson=${{CFCR_HASH}}
-      - VALUE_namespace=${{HELM_NAMESPACE}}
+      - VALUE_namespace=codefreshbot
       - CHART_REF=${{CHART_REF}}
       - VALUE_image=${{IMAGE}}
       - VALUE_ingress_enabled=true
