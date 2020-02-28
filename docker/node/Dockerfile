@@ -16,8 +16,9 @@ RUN mkdir /application/config
 WORKDIR /application
 RUN ls && ls scripts
 RUN npm install
+RUN npm run config
 CMD npm run dev
 
-FROM node:12 AS prod
+FROM dev AS prod
 CMD npm run prod
 
