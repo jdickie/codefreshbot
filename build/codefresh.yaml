@@ -140,5 +140,7 @@ steps:
       - VALUE_namespace=${{HELM_NAMESPACE}}
       - CHART_REF=${{CHART_REF}}
       - VALUE_image=${{IMAGE}}
+      - VALUE_ingress_enabled=true
+      - VALUE_ingress_class=${{NGINX_CLASS}}
       - RELEASE_NAME=${{RELEASE_NAME}}
-      - VALUE_ingress_host=${{INGRESS_HOSTS_HOSTNAME}}
+      - VALUE_ingress_hostname=${{INGRESS_HOSTS_HOSTNAME}}
