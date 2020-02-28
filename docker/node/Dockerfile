@@ -9,10 +9,12 @@ ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 ENV AWS_REGION=${AWS_REGION}
 
 COPY ./package* /application/
-COPY lib /application/
+COPY lib /application/lib
+COPY scripts /application/scripts
 COPY index.js /application/
 RUN mkdir /application/config
 WORKDIR /application
+RUN ls && ls scripts
 RUN npm install
 CMD npm run dev
 
