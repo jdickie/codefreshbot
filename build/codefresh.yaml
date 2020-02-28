@@ -34,10 +34,6 @@ steps:
     type: "build"
     target: "prod"
     image_name: "codefreshbot"
-    environment:
-      - AWS_ACCESS_KEY_ID=${{AWS_ACCESS_KEY_ID}}
-      - AWS_SECRET_ACCESS_KEY=${{AWS_SECRET_ACCESS_KEY}}
-      - AWS_REGION=${{AWS_REGION}}
     tag: "${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
     dockerfile: "./docker/node/Dockerfile"
   pushing_to_registry:
