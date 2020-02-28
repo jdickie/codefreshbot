@@ -23,15 +23,11 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.hostname | quote }}
       http:
         paths:
-        {{- range .paths }}
-          - path: {{ . }}
+          - path: /
             backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ include "codefreshbot.fullname" . }}
               servicePort: http
-        {{- end }}
-  {{- end }}
 {{- end }}
