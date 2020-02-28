@@ -38,36 +38,8 @@ steps:
       - AWS_ACCESS_KEY_ID=${{AWS_ACCESS_KEY_ID}}
       - AWS_SECRET_ACCESS_KEY=${{AWS_SECRET_ACCESS_KEY}}
       - AWS_REGION=${{AWS_REGION}}
-    tag: "${{CF_BRANCH_TAG_NORMALIZED}}-${{CF_SHORT_REVISION}}"
+    tag: "codefreshbot-${{CF_SHORT_REVISION}}"
     dockerfile: "./docker/node/Dockerfile"
-  pushing_to_registry:
-    when:
-      steps:
-        all:
-          - name: build_docker_image
-            on:
-            - success
-    title: "Pushing images to a Docker Registry"
-    stage: "push"
-    fail_fast: false
-    type: push
-    scale:
-      ecr_push:
-        when:
-          condition:
-            all:
-              isTaggedForRelease: "'${{BUILD_CHART}}' == 'true'"
-        candidate: "${{build_docker_image}}"
-        tag: "codfreshbot-${{CF_SHORT_REVISION}}"
-        registry: ecr-npr-useast-1
-      docker_push:
-        when:
-          condition:
-            all:
-              isNotTaggedForRelease: "'${{BUILD_CHART}}' == 'false'"
-        candidate: "${{build_docker_image}}"
-        tag: "codefreshbot-${{CF_SHORT_REVISION}}"
-        registry: cfcr
   # Using the local repo for Codefresh for now. 
   helm_push_repo:
     title: "Push Chart"
