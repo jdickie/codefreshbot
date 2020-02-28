@@ -53,13 +53,6 @@ steps:
       - ACTION=push
       - CHART_REF=./charts/codefreshbot
       - CHART_VERSION=${{CHART_VERSION}}
-    on_success:
-      annotations:
-        set:
-          - entity_id: ${{CF_BUILD_ID}}
-            entity_type: build
-            annotations:
-            - chart_version: ${{CHART_VERSION}}
   setup:
     stage: "helm"
     image: 'alpine'
@@ -86,7 +79,6 @@ steps:
         commands:
             - cf_export CHART_REF=./charts/codefreshbot
             - cf_export IMAGE=${{RFCR_REPO}}:codefreshbot-${{CF_SHORT_REVISION}}
-            - cf_export CHART_VERSION=0.0.0-${{CF_BRANCH}}
             - cf_export RELEASE_NAME=codefreshbot-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
             - cf_export INGRESS_HOSTS_HOSTNAME="codefreshbot.${{KUBE_SUBDOMAIN}}.${{KUBE_DOMAIN}}"
   deploy:
@@ -114,5 +106,5 @@ steps:
       - VALUE_image=${{IMAGE}}
       - VALUE_ingress_enabled=true
       - VALUE_ingress_class=${{NGINX_CLASS}}
-      - RELEASE_NAME=${{RELEASE_NAME}}
+      - RELEASE_NAME=codefreshbot
       - VALUE_ingress_hostname=${{INGRESS_HOSTS_HOSTNAME}}
