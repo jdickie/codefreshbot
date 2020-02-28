@@ -136,7 +136,7 @@ steps:
       - CHART_VERSION=${{CHART_VERSION}}
       - NAMESPACE=codefreshbot
       - NODE_ENV=production
-      - VALUE_imagePullSecretsJson=${{CFCR_HASH}}
+      - VALUE_imagePullSecrets_Dockerconfigjson=${{CFCR_HASH}}
       - VALUE_namespace=${{HELM_NAMESPACE}}
       - CHART_REF=${{CHART_REF}}
       - VALUE_image=${{IMAGE}}
