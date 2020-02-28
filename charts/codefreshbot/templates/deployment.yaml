@@ -19,6 +19,8 @@ spec:
         app.kubernetes.io/name: {{ include "codefreshbot.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.Name }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image }}"
