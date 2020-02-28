@@ -58,7 +58,7 @@ steps:
             all:
               isTaggedForRelease: "'${{BUILD_CHART}}' == 'true'"
         candidate: "${{build_docker_image}}"
-        tag: "codfresh-${{CF_SHORT_REVISION}}"
+        tag: "codfreshbot-${{CF_SHORT_REVISION}}"
         registry: ecr-npr-useast-1
       docker_push:
         when:
@@ -66,7 +66,7 @@ steps:
             all:
               isNotTaggedForRelease: "'${{BUILD_CHART}}' == 'false'"
         candidate: "${{build_docker_image}}"
-        tag: "codefresh-${{CF_SHORT_REVISION}}"
+        tag: "codefreshbot-${{CF_SHORT_REVISION}}"
         registry: cfcr
   # Using the local repo for Codefresh for now. 
   helm_push_repo:
