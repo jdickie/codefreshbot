@@ -29,5 +29,5 @@ spec:
           - path: /
             backend:
               serviceName: {{ include "codefreshbot.fullname" . }}
-              servicePort: http
+              servicePort: 80
 {{- end }}

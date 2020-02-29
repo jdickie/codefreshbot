@@ -14,6 +14,7 @@ fullnameOverride: codefreshbot
 service:
   type: ClusterIP
   port: 80
+  containerPort: 3000
 
 ingress:
   enabled: false
