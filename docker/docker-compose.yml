@@ -5,14 +5,14 @@ services:
     build:
       context: ..
       dockerfile: ./docker/node/Dockerfile
-      target: prod
+      target: dev
       args:
         - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
         - AWS_REGION=$AWS_REGION
     image: cf-bot
-    # volumes:
-    #   - "..:/application/"
+    volumes:
+      - "..:/application/"
     ports:
       - "3000:3000"
     container_name: cf-bot
