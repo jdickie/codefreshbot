@@ -107,3 +107,4 @@ steps:
       - VALUE_ingress_class=${{NGINX_CLASS}}
       - RELEASE_NAME=codefreshbot
       - VALUE_ingress_hostname=${{INGRESS_HOSTS_HOSTNAME}}
+      - CMD_PS=--wait
