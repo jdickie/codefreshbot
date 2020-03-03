@@ -31,6 +31,3 @@ ingress:
     - host: chart-example.local
       paths: []
 
-imagePullSecrets:
-  Name: cf-secret
-  Dockerconfigjson: 
