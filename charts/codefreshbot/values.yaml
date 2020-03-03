@@ -4,6 +4,10 @@
 
 replicaCount: 1
 
+# For overridding values in codefresh-secret chart
+codefreshSecret:
+  enabled: true
+
 image:
   
 pullPolicy: IfNotPresent

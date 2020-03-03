@@ -7,4 +7,10 @@ jspm_packages
 .serverless
 
 .DS_Store
+<<<<<<< HEAD
 *.env
+=======
+
+# Force install of dependencies in codefresh
+charts/codefreshbot/charts/
+>>>>>>> feat: Adding in dep to bring in image pull secrets

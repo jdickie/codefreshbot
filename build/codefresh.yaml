@@ -99,7 +99,8 @@ steps:
       - CHART_VERSION=${{CHART_VERSION}}
       - NAMESPACE=codefreshbot
       - NODE_ENV=production
-      - VALUE_imagePullSecrets_Dockerconfigjson=${{CFCR_HASH}}
+      - VALUE_codefreshSecret_imageCredentials_username: ${{CFCR_USERNAME}}
+      - VALUE_codefreshSecret_imageCredentials_password: ${{CFCR_PASSWORD}}
       - VALUE_namespace=codefreshbot
       - CHART_REF=${{CHART_REF}}
       - VALUE_image=${{IMAGE}}
