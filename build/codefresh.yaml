@@ -100,7 +100,7 @@ steps:
       - NAMESPACE=codefreshbot
       - NODE_ENV=production
       - VALUE_codefreshSecret_imageCredentials_username=${{CFCR_USERNAME}}
-      - VALUE_codefreshSecret_imageCredentials_password=${{CFCR_PASSWORD}}
+      - VALUE_codefreshSecret_imageCredentials_password=${{CFCR_LOGIN_TOKEN}}
       - VALUE_namespace=codefreshbot
       - CHART_REF=${{CHART_REF}}
       - VALUE_image=${{IMAGE}}
