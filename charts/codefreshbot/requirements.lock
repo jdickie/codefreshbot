@@ -1,6 +1,6 @@
 dependencies:
 - name: codefresh-secret
   repository: cm://h.cfcr.io/npr-infra-test/default
-  version: 0.1.1
-digest: sha256:c2645de2f4986dce0b04e344051c0730ced19172e286539ae2e6d6cb389dee38
-generated: 2020-03-03T12:29:58.404019-05:00
+  version: 0.1.2
+digest: sha256:204066709b2255f45d6e06aba4ddb847e4c81c67ed3eb69ad0a3ef3e883197ef
+generated: 2020-03-04T15:00:08.532894-05:00

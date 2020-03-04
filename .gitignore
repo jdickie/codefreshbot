@@ -6,11 +6,9 @@ jspm_packages
 # Serverless directories
 .serverless
 
-.DS_Store
-<<<<<<< HEAD
 *.env
-=======
 
 # Force install of dependencies in codefresh
-charts/codefreshbot/charts/
->>>>>>> feat: Adding in dep to bring in image pull secrets
+charts/codefreshbot/charts/*.tgz
+# Misc test scripts
+*.sh
