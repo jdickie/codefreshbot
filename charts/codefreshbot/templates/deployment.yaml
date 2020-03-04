@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       imagePullSecrets:
-        - name: {{ .Values.codefreshSecret.secret.name }}
+        - name: {{ .Values.imagePullSecretName }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image }}"

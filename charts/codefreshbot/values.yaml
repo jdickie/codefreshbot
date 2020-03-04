@@ -4,11 +4,12 @@
 
 replicaCount: 1
 
+imagePullSecretName: cf-secret
+
 # For overridding values in codefresh-secret chart
-codefreshSecret:
-  enabled: true
+codefresh-secret:
   secret:
-    name: cfb-codefresh-secret
+    name: cf-secret
   nameOverride: codefreshbot
   fullnameOverride: codefresh-secret
 
