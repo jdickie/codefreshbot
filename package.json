@@ -13,20 +13,24 @@
     "Slack",
     "Codefresh"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jdickie/codefreshbot.git"
+  },
   "author": "jdickie",
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "^16.36.0",
-    "@slack/events-api": "^2.3.0",
-    "@slack/interactive-messages": "^1.4.0",
-    "@slack/web-api": "^5.6.0",
-    "aws-sdk": "^2.628.0",
-    "config": "^3.2.4",
+    "@octokit/rest": "^16.43.1",
+    "@slack/events-api": "^2.3.2",
+    "@slack/interactive-messages": "^1.5.0",
+    "@slack/web-api": "^5.8.0",
+    "aws-sdk": "^2.639.0",
+    "config": "^3.3.0",
     "express": "^4.17.1",
     "http-proxy-agent": "^4.0.1",
     "https-proxy-agent": "^5.0.0",
     "nodemon": "^2.0.2",
-    "request": "^2.88.0",
+    "request": "^2.88.2",
     "request-promise-native": "^1.0.8"
   }
 }
