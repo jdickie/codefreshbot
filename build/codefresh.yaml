@@ -1,0 +1,110 @@
+version: "1.0"
+# Fail-fast false means that this entire pipeline will run through until completion despite errors. If you want a step
+# to not run when an error occurs, there needs to be conditionals (https://codefresh.io/docs/docs/codefresh-yaml/conditional-execution-of-steps/)
+# setup for that step.
+fail_fast: false
+stages:
+  - "clone"
+  - "build"
+  - "test"
+  - "push"
+  - "helm"
+  - "deploy"
+  - "notify"
+  - "post_release"
+steps:
+  main_clone:
+    type: "git-clone"
+    description: "Cloning main repository..."
+    repo: ${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}
+    revision: "${{CF_BRANCH}}"
+    stage: "clone"
+  env_setup:
+    stage: "build"
+    title: "Putting together necessary env values"
+    type: freestyle
+    image: 'alpine:3.8'
+    environment:
+      - BRANCH=${{CF_BRANCH_TAG_NORMALIZED}}
+    commands:
+      - cf_export CHART_VERSION=$(echo -n "${BRANCH/v/}")
+  build_docker_image:
+    title: "Building Docker Images in Codefresh"
+    stage: "build"
+    type: "build"
+    target: "prod"
+    image_name: "codefreshbot"
+    build_arguments:
+      - AWS_ACCESS_KEY_ID=${{AWS_ACCESS_KEY_ID}}
+      - AWS_SECRET_ACCESS_KEY=${{AWS_SECRET_ACCESS_KEY}}
+      - AWS_REGION=${{AWS_REGION}}
+    tag: "codefreshbot-${{CF_SHORT_REVISION}}"
+    dockerfile: "./docker/node/Dockerfile"
+  # Using the local repo for Codefresh for now. 
+  helm_push_repo:
+    title: "Push Chart"
+    image: codefresh/cfstep-helm:2.12.3
+    stage: "push"
+    when:
+      condition:
+        all:
+          isTaggedForRelease: "'${{BUILD_CHART}}' == 'true'"
+    environment:
+      - ACTION=push
+      - CHART_REF=./charts/codefreshbot
+      - CHART_VERSION=${{CHART_VERSION}}
+  setup:
+    stage: "helm"
+    image: 'alpine'
+    title: Prep for chart deployment
+    scale:
+      # Use cases not in here:
+      # Prod -- We don't do any setup, helm pushes, or even builds (From above). Instead we're focusing on taking a previously assembled Helm chart from the Codefresh
+      # Helm repo (a.k.a. Chartmuseum) and deploying it to production.
+      # Use case: We're working in a feature branch/PR and asking to deploy early to dev-preview.nprinfra.org. Note that for this use case we're going to be skipping
+      # saving the Helm chart and are going to just use a version 0.0.0 (Default) that will be made unique by adding the -<branchname> to it. 
+      dev_setup:
+        title: "Dev-Preview"
+        when:
+          condition:
+            all:
+              isDevDeployment: "'${{DEPLOY_ENVIRONMENT}}' == 'feature'"
+          steps:
+            all:
+              - name: build_docker_image
+                on:
+                - success
+        environment:
+            - NAMESPACE=${{CF_BRANCH_TAG_NORMALIZED}}-codefreshbot
+        commands:
+            - cf_export CHART_REF=./charts/codefreshbot
+            - cf_export IMAGE=${{RFCR_REPO}}:codefreshbot-${{CF_SHORT_REVISION}}
+            - cf_export INGRESS_HOSTS_HOSTNAME="codefreshbot.${{KUBE_SUBDOMAIN}}.${{KUBE_DOMAIN}}"
+  deploy:
+    when:
+      steps:
+        any:
+          - name: dev_setup
+            on:
+            - success
+    image: codefresh/cfstep-helm:2.12.3
+    title: Deploying Client
+    stage: "deploy"
+    # To see what env vars are being set here, look above in the setup section and read the documentation at the top.
+    environment:
+      # Special in-depth note: Install in Codefresh Helm steps really means to do an update with --install --force as a flag. 
+      # The first time this runs it'll install like a normal install step, the subsequent times it will update what is there.
+      - ACTION=install
+      - KUBE_CONTEXT=${{KUBE_CONTEXT}}
+      - CHART_VERSION=${{CHART_VERSION}}
+      - NAMESPACE=codefreshbot
+      - VALUE_codefresh-secret_imageCredentials_username=${{CFCR_USERNAME}}
+      - VALUE_codefresh-secret_imageCredentials_password=${{CFCR_LOGIN_TOKEN}}
+      - VALUE_namespace=codefreshbot
+      - CHART_REF=${{CHART_REF}}
+      - VALUE_image=${{IMAGE}}
+      - VALUE_ingress_enabled=true
+      - VALUE_ingress_class=${{NGINX_CLASS}}
+      - RELEASE_NAME=codefreshbot
+      - VALUE_ingress_hostname=${{INGRESS_HOSTS_HOSTNAME}}
+      - CMD_PS=--wait

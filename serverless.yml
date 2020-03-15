@@ -1,0 +1,43 @@
+# Lambda configuration for the Codefreshbot. Intended to be used in AWS Lambda with API Gateway
+
+service: botservice
+app: codefreshbot
+org: jgrantd
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  memorySize: 256
+  stackName: codefreshbot-lambda-stack-${opt:stage, 'dev'}
+  apiName: cfbot-api-${opt:stage, 'dev'}
+  logRetentionInDays: 3
+  stackTags:
+    - usage:slack
+    - type:bot
+
+plugins:
+  - serverless-express
+  - serverless-offline
+functions:
+  deploy:
+    handler: ./lib/deploy.handler
+    description: Starting point for opening up modal
+    events:
+      - http: POST /deploy_git_tag
+  events:
+    handler: ./lib/events.handler
+    description: Routing for events calls
+    events:
+      - http: POST /events
+  interactions:
+    handler: ./lib/interactions.handler
+    description: Routing for interactions
+    events:
+      - http: POST /interactions
+custom:
+  serverless-offline:
+    httpPort: 3000

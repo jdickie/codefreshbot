@@ -1,3 +1,14 @@
 config
+# package directories
 node_modules
-.DS_Store
+jspm_packages
+
+# Serverless directories
+.serverless
+
+*.env
+
+# Force install of dependencies in codefresh
+charts/codefreshbot/charts/*.tgz
+# Misc test scripts
+*.sh

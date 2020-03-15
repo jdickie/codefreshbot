@@ -1,0 +1,38 @@
+# Default values for codefreshbot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+imagePullSecretName: cf-secret
+
+# For overridding values in codefresh-secret chart
+codefresh-secret:
+  secret:
+    name: cf-secret
+  nameOverride: codefreshbot
+  fullnameOverride: codefresh-secret
+
+image:
+  
+pullPolicy: IfNotPresent
+
+nameOverride: codefreshbot
+fullnameOverride: codefreshbot
+
+service:
+  type: ClusterIP
+  port: 80
+  containerPort: 3000
+
+ingress:
+  enabled: false
+  class: 
+  annotations: 
+    # kubernetes.io/ingress.class: 
+    # kubernetes.io/tls-acme: "true"
+  hostname: 
+  hosts:
+    - host: chart-example.local
+      paths: []
+

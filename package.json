@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm install && export ENVIRONMENT=dev && nodemon index.js"
+    "config": "node ./scripts/install_config.js",
+    "dev": "export ENVIRONMENT=dev && nodemon index.js",
+    "prod": "export ENVIRONMENT=prod && node index.js"
   },
   "keywords": [
     "Slack",
@@ -18,9 +20,11 @@
     "@slack/events-api": "^2.3.0",
     "@slack/interactive-messages": "^1.4.0",
     "@slack/web-api": "^5.6.0",
-    "codefresh-sdk": "^1.4.0",
+    "aws-sdk": "^2.628.0",
     "config": "^3.2.4",
     "express": "^4.17.1",
+    "http-proxy-agent": "^4.0.1",
+    "https-proxy-agent": "^5.0.0",
     "nodemon": "^2.0.2",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8"
