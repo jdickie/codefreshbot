@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- include "ingress.required-annotations" . | nindent 4 }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:

@@ -26,8 +26,21 @@ service:
   containerPort: 3000
 
 ingress:
-  enabled: false
+  enabled: true
   class: 
+  requiredAnnotations:
+    # Sets the nginx.ingress.kubernetes.io/enable-cors value
+    cors:
+      enabled: "true"
+    # Values for cert-manager-io
+    certManager:
+      clusterIssuer: "letsencrypt-prod"
+      acme:
+        challenge: dns01
+        provider: route53
+    # Sets the nginx.kubernetes.io/ingress.force-ssl-redirect value
+    forceSSLRedirect: "true"
+    allowHttp: "false"
   annotations: 
     # kubernetes.io/ingress.class: 
     # kubernetes.io/tls-acme: "true"
