@@ -14,9 +14,9 @@ COPY scripts /application/scripts
 COPY index.js /application/
 RUN mkdir /application/config
 WORKDIR /application
-RUN ls && ls scripts
 RUN npm install
 RUN npm run config
+RUN ls /application/config/
 CMD npm run dev
 
 FROM dev AS prod
