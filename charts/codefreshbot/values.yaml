@@ -27,7 +27,7 @@ service:
 
 ingress:
   enabled: true
-  class: 
+  class: nginx
   requiredAnnotations:
     # Sets the nginx.ingress.kubernetes.io/enable-cors value
     cors:
