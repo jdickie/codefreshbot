@@ -26,6 +26,7 @@ service:
   containerPort: 3000
 
 ingress:
+  secretName: cf-secret-tls
   enabled: true
   class: nginx
   requiredAnnotations:
