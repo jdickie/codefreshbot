@@ -3,9 +3,9 @@ const fs = require('fs');
 const PARAM_PATH='/codefreshbot/config';
 
 const ssm = new aws.SSM();
-const configRawJSON = ssm.getParameter({
+ssm.getParameter({
     Name: PARAM_PATH,
-    WithDecryption: false
+    WithDecryption: true
 }, (err, data) => {
     if (err) {
         console.log('Error retrieving SSM data');
